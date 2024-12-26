@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Variables (Update these with your desired values)
+REGION="us-east-1"          # AWS Region
+INSTANCE_TYPE="t2.micro"    # Instance type
+AMI_ID="ami-0abcdef1234567890" # AMI ID (replace with a valid AMI ID for your region)
+KEY_NAME="ec2.pem"      # Key pair name (must exist)
+SECURITY_GROUP="my_sg_harsha" # Security group name or ID
+TAG_NAME="today_instance"    # Tag name for the instance
+# Create the EC2 instance
+echo "Creating EC2 instance in region $REGION..."
+
+INSTANCE_ID=$(aws ec2 run-instances \
+  --region "$REGION" \
+  --instance-type "$INSTANCE_TYPE" \
+  --image-id "$AMI_ID" \
+  --key-name "$KEY_NAME" \
+  --security-groups "$SECURITY_GROUP" \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$TAG_NAME}]" \
+  --query 'Instances[0].InstanceId' \
+  --output text)
+
+if [ $? -eq 0 ]; then
+  echo "EC2 instance created successfully!"
+  echo "Instance ID: $INSTANCE_ID"
+else
+  echo "Failed to create EC2 instance."
+  exit 1
+fi
+
+echo "Done."
