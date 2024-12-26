@@ -1,0 +1,18 @@
+#!/bin/bash
+instance_id="ami-0abcdef1234567890"
+region "us-east-1"
+instance_name="automation_testing"
+start_time="10:00"
+end_time="18:00"
+current_time=$(TZ="Asia/Kolkata" date +"%H:%M")
+recipient_email="reddyharsha664@gmail.com"
+echo "Current Time (Asia/Kolkata): $current_time"
+if [ "$current_time" = "$start_time" ]; then
+    echo "Starting EC2 instance with name: $instance_name"
+    aws ec2 start-instances-instance-ids "$instance_id"--region "$region"
+    echo -e "Subject: $instance_name EC2 got started at $current_time successfully" | msmtp "$recipient_email"
+elif [ "$current_time" = "$end_time" ]; then
+    echo "Stopping EC2 instance with name: $instance_name"
+    aws ec2 stop-instances-instance-ids "$instance_id"--region "$region"
+    echo -e "Subject: $instance_name EC2 got stopped at $current_time successfully" | msmtp "$recipient_email"
+else
